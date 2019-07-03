@@ -4,7 +4,8 @@
 # PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel with 
 # Hurricane Electric Free IPv6 Tunnel Broker (https://tunnelbroker.net/)
 # based on https://github.com/snobu/v6ToGo/blob/master/v6ToGo.ps1 
-# (Script using deprecated Tunnel Client Endpoint Update APIs) 
+# (Script using deprecated Tunnel Client Endpoint Update APIs
+# check https://forums.he.net/index.php?topic=3153.0 for more Details) 
 # based on https://tunnelbroker.net ->Tunnel Details
 #  -> Example Configurations Tab -> Windows 10 selection
 
@@ -17,15 +18,16 @@ if ($psUnsupportedConsoleApplications) {
 # Your tunnelbroker.net username
 $USERNAME = "<>"
 #
-# Tunnel specific authentication key (Update Key under Tunnel Datails 
+# Tunnel specific authentication key (Update Key under Tunnel Details 
 # -> Advanced tab on the tunnel information page) 
-# if one is set, otherwise your Tunnelbroker.net password.
+# if one is set, otherwise your tunnelbroker.net password.
 $PASSWORD = "<>"
 #
-# Your Numeric tunnel ID
+# Your Numeric Tunnel ID
 $HOSTNAME = "<>"
 #
 # Update URL
+# Used to update the listed tunnel's client endpoint to the IP address making the update request.
 $URL = "https://ipv4.tunnelbroker.net/nic/update?username=$USERNAME&password=$PASSWORD&hostname=$HOSTNAME"
 # Server IPv4 Address 
 # This is the IPv4 endpoint of your Tunnel Server.
