@@ -3,10 +3,10 @@
 
 # PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel with 
 # Hurricane Electric Free IPv6 Tunnel Broker (https://tunnelbroker.net/)
-# based on https://tunnelbroker.net ->Tunnel Details
-#  -> Example Configurations Tab -> Windows 10 selection
 # based on https://github.com/snobu/v6ToGo/blob/master/v6ToGo.ps1 
 # (Script using deprecated Tunnel Client Endpoint Update APIs) 
+# based on https://tunnelbroker.net ->Tunnel Details
+#  -> Example Configurations Tab -> Windows 10 selection
 
 # ISE doesn't like netsh.exe, we'll fix that:
 if ($psUnsupportedConsoleApplications) { 
