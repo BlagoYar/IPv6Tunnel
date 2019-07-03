@@ -5,5 +5,5 @@ PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel on Windows 10 wi
 Works with PowerShell 4.0 or better. 
 You should Run this script as an Administrator.
 
-- [X] Initial Version using netsh
+- [X] Initial version using netsh
 - [ ] Replace netsh with PowerShell cmdlets (netsh is deprecated)
