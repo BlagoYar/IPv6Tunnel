@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-'Requires PowerShell Version 4.0'
+'Requires PowerShell Version >= 4.0'
 "Running PowerShell $($PSVersionTable.PSVersion)."
 #Requires -RunAsAdministrator
 
