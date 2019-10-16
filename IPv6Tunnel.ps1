@@ -1,4 +1,6 @@
-#Requires -version 4.0
+#Requires -Version 4.0
+'Requires PowerShell Version 4.0'
+"Running PowerShell $($PSVersionTable.PSVersion)."
 #Requires -RunAsAdministrator
 
 # PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel with 
