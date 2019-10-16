@@ -18,22 +18,22 @@ if ($psUnsupportedConsoleApplications) {
 #++++++++++++++++++++++++++Adjust your configuration here+++++++++++++++++++++++
 #
 # Your tunnelbroker.net username
-$USERNAME = "<>"
+$USERNAME = ""
 #
 # Tunnel specific authentication key (Update Key under Tunnel Details 
 # -> Advanced tab on the tunnel information page) 
 # if one is set, otherwise your tunnelbroker.net password.
-$PASSWORD = "<>"
+$PASSWORD = ""
 #
 # Your Numeric Tunnel ID
-$HOSTNAME = "<>"
+$HOSTNAME = ""
 #
 # Update URL
 # Used to update the listed tunnel's client endpoint to the IP address making the update request.
 $URL = "https://ipv4.tunnelbroker.net/nic/update?username=$USERNAME&password=$PASSWORD&hostname=$HOSTNAME"
 # Server IPv4 Address 
 # This is the IPv4 endpoint of your Tunnel Server.
-$ServerIPv4Address = "<X.X.X.X>"
+$ServerIPv4Address = "X.X.X.X"
 # Server IPv6 Address
 # This is the IPv6 endpoint of your Tunnel on our Tunnel Server.(/64 allocation)
 $ServerIPv6Address = "2001:470:XXXX:YYYY::1"
