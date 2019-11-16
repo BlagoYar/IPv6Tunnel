@@ -1,8 +1,3 @@
-#Requires -Version 4.0
-'Requires PowerShell Version >= 4.0'
-"Running PowerShell $($PSVersionTable.PSVersion)."
-#Requires -RunAsAdministrator
-
 # PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel with 
 # Hurricane Electric Free IPv6 Tunnel Broker (https://tunnelbroker.net/)
 # based on https://github.com/snobu/v6ToGo/blob/master/v6ToGo.ps1 
@@ -11,11 +6,26 @@
 # based on https://tunnelbroker.net ->Tunnel Details
 #  -> Example Configurations Tab -> Windows 10 selection
 
-# ISE doesn't like netsh.exe, we'll fix that:
+#Requires -Version 4.0
+Write-Output "This Script requires PowerShell Version >= 4.0"
+Write-Output "You are running PowerShell Version $($PSVersionTable.PSVersion)."
+
+# Check if we are currently running admin PowerShell with elevated privileges as administrator.
+# If not it is self-elevating while preserving the working directory
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process PowerShell -Verb RunAs "-NoProfile -ExecutionPolicy Bypass -Command `"cd '$pwd'; & '$PSCommandPath';`"";
+    exit;
+}
+
+# Windows PowerShell ISE doesn't like netsh/netsh.exe, we'll fix that:
 if ($psUnsupportedConsoleApplications) { 
 		$psUnsupportedConsoleApplications.Clear() 
 }
+
 #++++++++++++++++++++++++++Adjust your configuration here+++++++++++++++++++++++
+# Please configure $USERNAME, $PASSWORD, $HOSTNAME, $ServerIPv4Address & $ServerIPv6Address
+# according to your tunnnelbroker.net IPv6 Tunnel configuration 
+# Please configure additionally your desired $TUNNELNAME
 #
 # Your tunnelbroker.net username
 $USERNAME = ""
@@ -47,7 +57,7 @@ $TUNNELNAME = "IPv6Tunnel"
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Write-Output 'Contacting tunnelbroker.net to check your Client IPv4 Endpoint'
-$response = Invoke-WebRequest -UseBasicParsing $URL | select -Expand Content
+$response = Invoke-WebRequest -UseBasicParsing $URL | Select-Object -Expand Content
 if ($response -match "ERROR") {
     throw $response
 }
@@ -57,32 +67,48 @@ if ($response -match "ERROR") {
 # It should be your publicly facing and accessible address. 
 # If you are behind a firewall most likely this is the WAN or INTERNET address.
 $ClientIPv4Address = $(Get-NetIPConfiguration |
-    ? {$_.NetProfile.IPv4Connectivity -eq 'Internet'}).IPV4Address[0].IPAddress
+        Where-Object { $_.NetProfile.IPv4Connectivity -eq 'Internet' }).IPV4Address[0].IPAddress
 
 #Disable 6to4 
+Write-Output "Disable 6to4 tunnel adapter: "
 netsh interface 6to4 set state disabled
 #Disable Teredo
+Write-Output "Disable Teredo tunnel adapter: "
 netsh interface teredo set state disabled
-#Disable ISATAP
+#Disable isatap
+Write-Output "Disable isatap tunnel adapter: "
 netsh interface isatap set state disabled
 
-Write-Output ("Removing existing IPv6 tunnel interface" + $TUNNELNAME)
+Write-Output ("Removing existing IPv6 tunnel IPv6 Address: " + $TUNNELNAME)
+netsh interface ipv6 delete address interface=$TUNNELNAME address=$ClientIPv6Address 
+Write-Output ("Removing existing IPv6 tunnel interface: " + $TUNNELNAME)
 netsh interface ipv6 delete interface $TUNNELNAME
 
 Write-Output ("Creating tunnel interface " + $TUNNELNAME)
-Write-Host -Foreground Cyan ("Your Client IPv4 Address: "+ $ClientIPv4Address +
-			"`n" + "Remote Server IPv4 Address: " + $ServerIPv4Address)
+Write-Output ("Your Client IPv4 Address: " + $ClientIPv4Address +
+    "`n" + "Remote Server IPv4 Address: " + $ServerIPv4Address)
+Write-Output ("Your Client IPv6 Address: " + $ClientIPv6Address +
+    "`n" + "Remote Server IPv6 Address: " + $ServerIPv6Address)    
 netsh interface ipv6 add v6v4tunnel interface=$TUNNELNAME localaddress=$ClientIPv4Address remoteaddress=$ServerIPv4Address
-netsh interface ipv6 add address interface=$TUNNELNAME address=$ClientIPv6Address
+netsh interface ipv6 add address interface=$TUNNELNAME address=$ClientIPv6Address/64
 
+Write-Output "Disable IPv6 forwarding"
+netsh interface ipv6 set interface $TUNNELNAME forwarding=disabled
 Write-Output "Enable IPv6 forwarding"
-    netsh interface ipv6 set interface $TUNNELNAME forwarding=enabled
+netsh interface ipv6 set interface $TUNNELNAME forwarding=enabled
 
 # Only enable if you want to become a router
 # Get network adapter name from ncpa.cpl or Get-NetAdapter
 #
+# netsh interface ipv6 set interface "Ethernet 2" forwarding=disabled
 # netsh interface ipv6 set interface "Ethernet 2" forwarding=enabled
 # Write-Host -ForegroundColor Magenta "You are now an IPv6 router."
 
-Write-Output ("Injecting ::/0 via " + $TUNNELNAME)
-    netsh interface ipv6 add route prefix=::/0 interface=$TUNNELNAME nexthop=$ServerIPv6Address
+Write-Output ("Removing existing default route (::/0) for $TUNNELNAME")
+netsh interface ipv6 delete route prefix=::/0 interface=$TUNNELNAME nexthop=$ServerIPv6Address
+Write-Output ("Creating default route (::/0) for $TUNNELNAME with a next-hop address of $ServerIPv6Address")
+netsh interface ipv6 add route prefix=::/0 interface=$TUNNELNAME nexthop=$ServerIPv6Address
+
+# Opened admin PowerShell waits for a key press and doesn't close automatically.
+Write-Output "Press any key to close this admin shell..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
