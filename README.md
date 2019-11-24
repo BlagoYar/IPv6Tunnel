@@ -4,7 +4,7 @@ PowerShell script to build/rebuild a 6in4 (IPv6-in-IPv4) tunnel on Windows 10 wi
 
 
 -Requires at minimum Windows PowerShell 4.0.  
--This script needs administrtive rights. 
+-This script needs administrative rights. 
 It will check if PowerShell/PowerShell ISE is running with elevated privileges as administrator.
 If not it is trying to self-elevate. 
 
