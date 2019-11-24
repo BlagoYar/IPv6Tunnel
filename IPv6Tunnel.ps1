@@ -6,43 +6,72 @@
 # based on https://tunnelbroker.net ->Tunnel Details
 #  -> Example Configurations Tab -> Windows 10 selection
 
+# Pre-run check: Checks the minimal version of Windows PowerShell
 #Requires -Version 4.0
 Write-Output "This Script requires PowerShell Version >= 4.0"
 Write-Output "You are running PowerShell Version $($PSVersionTable.PSVersion)."
 
-# Check if we are currently running admin PowerShell with elevated privileges as administrator.
-# If not it is self-elevating while preserving the working directory
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+# Checks the runtime environment of the script
+if ($host.name -eq 'ConsoleHost') {
+    [bool]$PowerShell = $true
+} 
+if ($host.name -eq 'Windows Powershell ISE Host') {
+    [bool]$PowerShell_ISE = $true
+}
+
+# Check if we are currently running the runtime environment with elevated privileges as administrator.
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
+    [bool]$Administrator = $false
+}
+
+# Check if we are currently running PowerShell with elevated privileges as administrator.
+# If not it is self-elevating while preserving the working directory.
+if ($PowerShell -and ($Administrator -eq $false)) {
     Start-Process PowerShell -Verb RunAs "-NoProfile -ExecutionPolicy Bypass -Command `"cd '$pwd'; & '$PSCommandPath';`"";
     exit;
 }
 
-# Windows PowerShell ISE doesn't like netsh/netsh.exe, we'll fix that:
-if ($psUnsupportedConsoleApplications) { 
-		$psUnsupportedConsoleApplications.Clear() 
+# Check if we are currently running PowerShell ISE with elevated privileges as administrator.
+# If not it is self-elevating and starting PowerShell_ISE with the current Script.
+# Though you have to re-run the script manually.
+if ($PowerShell_ISE -and ($Administrator -eq $false)) {
+    Start-Process PowerShell_ISE -Verb RunAs "-NoProfile -File $PSCommandPath" 
+    exit;
 }
 
+# Windows PowerShell ISE doesn't like netsh/netsh.exe, we'll fix that:
+if ($PowerShell_ISE) {
+    $psUnsupportedConsoleApplications.Remove("netsh")
+    $psUnsupportedConsoleApplications.Remove("netsh.exe")
+} 
+
 #++++++++++++++++++++++++++Adjust your configuration here+++++++++++++++++++++++
-# Please configure $USERNAME, $PASSWORD, $HOSTNAME, $ServerIPv4Address & $ServerIPv6Address
-# according to your tunnnelbroker.net IPv6 Tunnel configuration 
+# Please configure $USERNAME, $UPDATEKEY_OR_PASSWORD, $TUNNEL_ID, 
+# $ServerIPv4Address, $ServerIPv6Address & $ClientIPv6Address
+# according to your tunnelbroker.net IPv6 Tunnel configuration.
 # Please configure additionally your desired $TUNNELNAME
 #
 # Your tunnelbroker.net username
 $USERNAME = ""
 #
-# Tunnel specific authentication key (Update Key under Tunnel Details 
+# Tunnel specific authentication key (Update Key. See Tunnel Details 
 # -> Advanced tab on the tunnel information page) 
 # if one is set, otherwise your tunnelbroker.net password.
-$PASSWORD = ""
+$UPDATEKEY_OR_PASSWORD =  ""
 #
-# Your Numeric Tunnel ID
-$HOSTNAME = ""
+# Your Numeric Tunnel ID (unique identifier for your tunnel. See Tunnel Details 
+# -> IPv6 Tunnel tab on the tunnel information page)
+$TUNNEL_ID =  ""
 #
 # Update URL
 # Used to update the listed tunnel's client endpoint to the IP address making the update request.
-$URL = "https://ipv4.tunnelbroker.net/nic/update?username=$USERNAME&password=$PASSWORD&hostname=$HOSTNAME"
+$URL = "https://ipv4.tunnelbroker.net/nic/update?username=$USERNAME&password=$UPDATEKEY_OR_PASSWORD&hostname=$TUNNEL_ID"
+#
+# IPv6 Tunnel Endpoints: 
+# See Tunnel Details 
+# -> IPv6 Tunnel tab ->IPv6 Tunnel Endpoints section on the tunnel information page)
 # Server IPv4 Address 
-# This is the IPv4 endpoint of your Tunnel Server.
+# This is the IPv4 endpoint of your Tunnel Server. 
 $ServerIPv4Address = "X.X.X.X"
 # Server IPv6 Address
 # This is the IPv6 endpoint of your Tunnel on our Tunnel Server.(/64 allocation)
@@ -53,6 +82,7 @@ $ServerIPv6Address = "2001:470:XXXX:YYYY::1"
 # We utilize a /64 for this because of RFC 3627.
 $ClientIPv6Address = "2001:470:XXXX:YYYY::2"
 #
+# Friendly name to use for interface in Windows 
 $TUNNELNAME = "IPv6Tunnel"
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -67,15 +97,15 @@ if ($response -match "ERROR") {
 # It should be your publicly facing and accessible address. 
 # If you are behind a firewall most likely this is the WAN or INTERNET address.
 $ClientIPv4Address = $(Get-NetIPConfiguration |
-        Where-Object { $_.NetProfile.IPv4Connectivity -eq 'Internet' }).IPV4Address[0].IPAddress
+    Where-Object { $_.NetProfile.IPv4Connectivity -eq 'Internet' }).IPV4Address[0].IPAddress
 
-#Disable 6to4 
+# Disable 6to4 
 Write-Output "Disable 6to4 tunnel adapter: "
 netsh interface 6to4 set state disabled
-#Disable Teredo
+# Disable Teredo
 Write-Output "Disable Teredo tunnel adapter: "
 netsh interface teredo set state disabled
-#Disable isatap
+# Disable isatap
 Write-Output "Disable isatap tunnel adapter: "
 netsh interface isatap set state disabled
 
@@ -90,19 +120,12 @@ Write-Output ("Your Client IPv4 Address: " + $ClientIPv4Address +
 Write-Output ("Your Client IPv6 Address: " + $ClientIPv6Address +
     "`n" + "Remote Server IPv6 Address: " + $ServerIPv6Address)    
 netsh interface ipv6 add v6v4tunnel interface=$TUNNELNAME localaddress=$ClientIPv4Address remoteaddress=$ServerIPv4Address
-netsh interface ipv6 add address interface=$TUNNELNAME address=$ClientIPv6Address/64
+netsh interface ipv6 add address interface=$TUNNELNAME address=$ClientIPv6Address
 
 Write-Output "Disable IPv6 forwarding"
 netsh interface ipv6 set interface $TUNNELNAME forwarding=disabled
 Write-Output "Enable IPv6 forwarding"
 netsh interface ipv6 set interface $TUNNELNAME forwarding=enabled
-
-# Only enable if you want to become a router
-# Get network adapter name from ncpa.cpl or Get-NetAdapter
-#
-# netsh interface ipv6 set interface "Ethernet 2" forwarding=disabled
-# netsh interface ipv6 set interface "Ethernet 2" forwarding=enabled
-# Write-Host -ForegroundColor Magenta "You are now an IPv6 router."
 
 Write-Output ("Removing existing default route (::/0) for $TUNNELNAME")
 netsh interface ipv6 delete route prefix=::/0 interface=$TUNNELNAME nexthop=$ServerIPv6Address
@@ -110,5 +133,15 @@ Write-Output ("Creating default route (::/0) for $TUNNELNAME with a next-hop add
 netsh interface ipv6 add route prefix=::/0 interface=$TUNNELNAME nexthop=$ServerIPv6Address
 
 # Opened admin PowerShell waits for a key press and doesn't close automatically.
-Write-Output "Press any key to close this admin shell..."
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+# used if the script is running in PowerShell
+if ($PowerShell) {
+    Write-Output "Press any key to close this shell..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+}
+# used if the script is running in PowerShell ISE
+if ($PowerShell_ISE) {
+    Read-Host "Press ENTER key to close this PowerShell ISE shell..."
+    #Cleanup-add netsh and netsh.exe again to $psUnsupportedConsoleApplications
+    $psUnsupportedConsoleApplications.Add("netsh")
+    $psUnsupportedConsoleApplications.Add("netsh.exe")
+} 
