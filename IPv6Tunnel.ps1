@@ -141,7 +141,7 @@ if ($PowerShell) {
 # used if the script is running in PowerShell ISE
 if ($PowerShell_ISE) {
     Read-Host "Press ENTER key to close this PowerShell ISE shell..."
-    #Cleanup-add netsh and netsh.exe again to $psUnsupportedConsoleApplications
+    # Cleanup-add netsh and netsh.exe again to $psUnsupportedConsoleApplications
     $psUnsupportedConsoleApplications.Add("netsh")
     $psUnsupportedConsoleApplications.Add("netsh.exe")
 } 
