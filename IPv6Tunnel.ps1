@@ -136,8 +136,9 @@ if ($response -match "ERROR") {
 # This is the IPv4 address that tunnel is pointing to.
 # It should be your publicly facing and accessible address. 
 # If you are behind a firewall most likely this is the WAN or INTERNET address.
-$ClientIPv4Address = $(Get-NetIPConfiguration |
-    Where-Object { $_.NetProfile.IPv4Connectivity -eq 'Internet' }).IPV4Address[0].IPAddress
+$ClientIPv4Address = $(Get-NetIPConfiguration | Where-Object {
+    $_.NetProfile -and $_.NetProfile.PSObject.Properties['IPv4Connectivity'] -and $_.NetProfile.IPv4Connectivity -eq 'Internet'
+}).IPV4Address[0].IPAddress
 
 # Disable 6to4 
 Write-Output "Disable 6to4 tunnel adapter: "
