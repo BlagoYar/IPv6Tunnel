@@ -19,6 +19,7 @@ Win+R -> GPEDIT.MSC
 
 Computer Configuration -> Administrative Templates -> Windows Components -> Windows PowerShell -> Enable scenarios -> Enabled -> Allow ... (this line with google translate)
 
+PS. Work on Windows 10 22H2
 --------------------------------------------------------
 Форк от https://github.com/krantic/ipv6tunnel с исправлением ошибки, когда виртуальные интерфейсы не имеют свойства IPv4Connectivity.
 
@@ -38,3 +39,5 @@ DisabledComponents в значение 0
 Win+R | gpedit.msc
 
 Конфигурация компьютера -> Административные шаблоны -> Компоненты Windows -> Windows PowerShell -> Включить выполнение сценариев -> Включено -> Разрешить ...
+
+ПС. Работает на Windows 10 22H2
