@@ -8,6 +8,6 @@ You must enter your data in lines 88-127
 --------------------------------------------------------
 Форк от https://github.com/krantic/ipv6tunnel с исправлением ошибки, когда виртуальные интерфейсы не имеют свойства IPv4Connectivity.
 
-Скрипт для создания туннеля IPv6 от https://tunnelbroker.net
+Скрипт для создания тунеля IPv6 от https://tunnelbroker.net
 
 Вы должны внести свои данные в строках 88-127
