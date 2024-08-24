@@ -17,7 +17,7 @@ If there is no parameter (but by default = not), then create REG_DWORD. For disa
 
 _Win+R -> GPEDIT.MSC_
 
-Computer Configuration -> Administrative Templates -> Windows Components -> Windows PowerShell -> Enable scenarios -> Enabled -> Allow ... (this line with google translate)
+**Computer Configuration -> Administrative Templates -> Windows Components -> Windows PowerShell -> Enable scenarios -> Enabled -> Allow ... (this line with google translate)**
 
 PS. Work on Windows 10 22H2
 --------------------------------------------------------
@@ -38,7 +38,7 @@ DisabledComponents в значение 0
 
 _Win+R | gpedit.msc_
 
-Конфигурация компьютера -> Административные шаблоны -> Компоненты Windows -> Windows PowerShell -> Включить выполнение сценариев -> Включено -> Разрешить ...
+**Конфигурация компьютера -> Административные шаблоны -> Компоненты Windows -> Windows PowerShell -> Включить выполнение сценариев -> Включено -> Разрешить ...**
 
 ПС. Работает на Windows 10 22H2
 --------------------------------------------------------
