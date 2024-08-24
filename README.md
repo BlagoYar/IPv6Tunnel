@@ -11,7 +11,7 @@ HKEY_LOCAL_MACHINE\System\CurrentControlset\Services\Tcpip6\Parameters
 
 Disabledcomponents in value 0
 
-If there is no parameter (but by default = not), then create REG_DWORD. For disable value 255 - https://learn.microsoft.com/en-en/troubleshoot/windows-server/networking/configure-ipv6-in-windows
+If there is no parameter (but by default = not), then create REG_DWORD. For disable value [255](https://learn.microsoft.com/en-en/troubleshoot/windows-server/networking/configure-ipv6-in-windows)
 
 It is also possible to enable PowerShell scenarios
 
