@@ -3,9 +3,9 @@ Fork from https://github.com/krantic/IPv6Tunnel with error fix when virtual inte
 A script for creating a tunnel IPV6 from https://tunnelbroker.net for Windows 10
 
 
-You must enter your data in lines 88-127
+- You must enter your data in lines 88-127
 
-Perhaps it will be necessary to change the registry parameter
+- Perhaps it will be necessary to change the registry parameter
 
 HKEY_LOCAL_MACHINE\System\CurrentControlset\Services\Tcpip6\Parameters
 
@@ -13,7 +13,7 @@ Disabledcomponents in value 0
 
 If there is no parameter (but by default = not), then create REG_DWORD. For disable value [255](https://learn.microsoft.com/en-en/troubleshoot/windows-server/networking/configure-ipv6-in-windows)
 
-It is also possible to enable PowerShell scenarios
+- It is also possible to enable PowerShell scenarios
 
 Win+R -> GPEDIT.MSC
 
