@@ -32,7 +32,7 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters
 
 DisabledComponents в значение 0
 
-Если параметра нет (а по умолчанию нет), то создать REG_DWORD. Чтобы отключить, значение 255 - https://learn.microsoft.com/ru-ru/troubleshoot/windows-server/networking/configure-ipv6-in-windows
+Если параметра нет (а по умолчанию нет), то создать REG_DWORD. Чтобы отключить, значение [255](https://learn.microsoft.com/ru-ru/troubleshoot/windows-server/networking/configure-ipv6-in-windows)
 
 Также возможно нужно включить выполнение сценариев PowerShell
 
