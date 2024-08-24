@@ -1,4 +1,4 @@
-Fork from https://github.com/krantic/IPv6Tunnel with error fix when virtual interfaces do not have the IPv4Connectivity property.
+Fork from [krantic](https://github.com/krantic/IPv6Tunnel) with error fix when virtual interfaces do not have the IPv4Connectivity property.
 
 A script for creating a tunnel IPV6 from https://tunnelbroker.net for Windows 10
 
@@ -21,7 +21,7 @@ _Win+R -> GPEDIT.MSC_
 
 PS. Work on Windows 10 22H2
 --------------------------------------------------------
-Форк от https://github.com/krantic/ipv6tunnel с исправлением ошибки, когда виртуальные интерфейсы не имеют свойства IPv4Connectivity.
+Форк от [krantic](https://github.com/krantic/ipv6tunnel) с исправлением ошибки, когда виртуальные интерфейсы не имеют свойства IPv4Connectivity.
 
 Скрипт для создания тунеля IPv6 от https://tunnelbroker.net для Windows 10
 
