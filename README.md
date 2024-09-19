@@ -15,7 +15,7 @@ If there is no parameter (but by default = not), then create REG_DWORD. For disa
 
 - It is also possible to enable PowerShell scenarios
 
-_Win+R -> GPEDIT.MSC_
+_Win+R -> gpedit.msc_
 
 **Computer Configuration -> Administrative Templates -> Windows Components -> Windows PowerShell -> Enable scenarios -> Enabled -> Allow ... (this line with google translate)**
 
